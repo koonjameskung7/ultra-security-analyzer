@@ -1,0 +1,20 @@
+# Virtual Environment
+venv/
+.venv/
+
+# Python Cache files
+__pycache__/
+*.pyc
+
+# OS generated files
+.DS_Store
+
+# 💥 SECURITY CRITICAL FILES 💥
+# 1. ห้าม Commit API Keys
+.env 
+
+# 2. ห้าม Commit Session/Log files
+*.log
+
+# 3. ห้าม Commit SQLite database (ถ้ามี)
+*.db

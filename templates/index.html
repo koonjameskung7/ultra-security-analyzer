@@ -1,121 +1,55 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Security Analyzer</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet"> 
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300C4FF'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E">
+    <title>Ultra Security Analyzer 🚀</title>
+    <style>
+        /* สไตล์ CSS แบบง่าย */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a2e; color: #fff; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background-color: #0f0f1a; padding: 30px; border-radius: 12px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); }
+        h1 { text-align: center; color: #00bcd4; }
+        .input-group { display: flex; margin-bottom: 20px; }
+        #url-input { flex-grow: 1; padding: 12px; border: 1px solid #333; border-radius: 6px 0 0 6px; background-color: #2c2c4d; color: #fff; font-size: 16px; }
+        #scan-button { padding: 12px 25px; background-color: #00bcd4; color: #fff; border: none; border-radius: 0 6px 6px 0; cursor: pointer; font-size: 16px; transition: background-color 0.3s; }
+        #scan-button:hover { background-color: #00a0b2; }
+        .result-box { margin-top: 30px; padding: 20px; border: 1px solid #444; border-radius: 8px; background-color: #1f1f3a; }
+        .error { color: #ff6b6b; font-weight: bold; }
+        .gemini-summary { border-left: 5px solid #ffcc00; padding-left: 15px; margin-top: 20px; }
+        .action-step { margin-top: 10px; padding: 10px; background-color: #2c2c4d; border-radius: 4px; }
+        .action-step::before { content: '✅ '; }
+        .header-list { margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .header-item { padding: 10px; border-radius: 6px; background-color: #333355; }
+        .header-item strong { display: block; margin-bottom: 5px; color: #ffcc00; }
+        .missing { color: #ff6b6b; }
+        .present { color: #6bff6b; }
+    </style>
 </head>
 <body>
-
     <div class="container">
-        
-        <h1 class="app-title">
-            <span class="gradient-text">Ultra Security Analyzer</span>
-        </h1>
-        
-        <form id="scanForm">
-            <input type="text" id="urlInput" placeholder="https://securityheaders.com/" required>
-            <button type="submit" id="scanButton">Scan</button>
-        </form>
-        
-        <div id="error" class="error-message" style="display: none;"></div>
-
-        <div id="loading" class="loading-overlay" style="display: none;">
-            <div class="spinner"></div>
-            <p>Analyzing Security Headers...</p>
+        <h1>Ultra Security Analyzer 🚀</h1>
+        <div class="input-group">
+            <input type="text" id="url-input" placeholder="ใส่ URL ที่ต้องการสแกน (เช่น https://www.insec.co.th/)" value="https://securityheaders.com">
+            <button id="scan-button">SCAN</button>
         </div>
 
-        <div id="results" class="results-section" style="display: none;">
+        <div id="loading" style="text-align: center; display: none;">กำลังสแกนและวิเคราะห์... (อาจใช้เวลา 10-20 วินาที)</div>
+        <div id="error-display" class="result-box error" style="display: none;"></div>
+        
+        <div id="results" class="result-box" style="display: none;">
+            <h2>📊 ผลการวิเคราะห์จาก Gemini AI</h2>
+            <div id="gemini-summary" class="gemini-summary"></div>
             
-            <div class="header-tabs">
-                <button class="tab-button tab-button-general active" id="tabGeneral">มุมมองทั่วไป</button>
-                <button class="tab-button tab-button-expert" id="tabExpert">มุมมองผู้เชี่ยวชาญ</button> 
-            </div>
+            <h3 style="margin-top: 25px;">🛠️ 3 ขั้นตอนสำคัญที่คุณต้องทำทันที:</h3>
+            <div id="action-steps-list"></div>
 
-            <div class="score-summary">
-                <div class="score-circle-container">
-                    <svg class="score-circle" width="160" height="160" viewBox="0 0 160 160">
-                        <circle class="circle-bg" cx="80" cy="80" r="70"></circle>
-                        <circle class="circle-progress" cx="80" cy="80" r="70"></circle>
-                    </svg>
-                    <div class="score-percentage" id="scorePercentage">0%</div>
-                </div>
-                
-                <div class="rank-info">
-                    <div class="rank-item">
-                        <span class="rank-icon">👁️</span> 
-                        <span id="overallRank">Rank: F</span>
-                    </div>
-                    <div class="rank-item">
-                        <div id="riskStars" class="star-rating"></div>
-                        <span id="riskLevel">Risk: High</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="generalView" class="view-content active-view">
-                <h2 class="section-title">Security Headers</h2>
-                <div id="headerDetails" class="header-grid">
-                    </div>
-            </div>
+            <h3 style="margin-top: 25px;">📋 Security Headers ที่พบ</h3>
+            <div id="header-details" class="header-list"></div>
 
-            <div id="expertView" class="view-content">
-                
-                <div id="expertHeaderDetails">
-                    <h2 class="section-title pass-title">✅ PASS: Headers ถูกตั้งค่าอย่างดี</h2>
-                    <div id="passGroup" class="header-group-list"></div>
-
-                    <h2 class="section-title warn-title">⚠️ WARNING: Headers ถูกตั้งค่าแต่ไม่เหมาะสม</h2>
-                    <div id="warnGroup" class="header-group-list"></div>
-
-                    <h2 class="section-title missing-title">❌ MISSING: Headers ที่มีความสำคัญต่อความปลอดภัย</h2>
-                    <div id="missingGroup" class="header-group-list"></div>
-                </div>
-                
-                <h2 class="section-title raw-title" style="margin-top: 50px;">Raw Headers Value</h2>
-                <div id="rawHeadersContainer">
-                    <table id="rawHeadersTable" class="raw-headers-table">
-                        <thead>
-                            <tr>
-                                <th>Header Name</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            </tbody>
-                    </table>
-                </div>
-                
-            </div>
-            
+            <h3 style="margin-top: 25px;">ข้อมูล Raw Headers (สำหรับผู้เชี่ยวชาญ)</h3>
+            <pre id="raw-headers-display" style="background-color: #000; padding: 10px; border-radius: 4px; overflow-x: auto;"></pre>
         </div>
     </div>
-    
-    <div id="aiSuggestionModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2 id="modalHeaderTitle" class="modal-title">AI Suggested Fix for [Header Name]</h2>
-            <div id="aiSuggestionLoading" style="text-align: center; color: var(--primary-blue); display: none;">
-                <div class="spinner small-spinner"></div>
-                <p>Generating suggested fix using Gemini AI...</p>
-            </div>
-            <div id="aiSuggestionError" class="error-message" style="display: none;"></div>
-            
-            <div id="aiSuggestionResult">
-                <p id="aiSuggestionExplanation" class="ai-explanation"></p>
-                
-                <div id="aiSuggestedCodeContainer">
-                    </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="script.js"></script>
 </body>
 </html>

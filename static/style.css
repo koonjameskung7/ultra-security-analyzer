@@ -320,11 +320,12 @@ body {
     color: #5ce1e6;
 }
 
-/* RAW HEADERS TABLE */
+/* RAW HEADERS TABLE (MODIFIED FOR SORTING/WRAP) */
 .raw-headers-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    table-layout: fixed; /* NEW: บังคับให้ตารางใช้ความกว้าง 100% */
 }
 
 .raw-headers-table th,
@@ -332,6 +333,7 @@ body {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid var(--border-dark);
+    vertical-align: top; /* NEW: จัดให้อยู่ด้านบน */
 }
 
 .raw-headers-table th {
@@ -343,6 +345,36 @@ body {
 .raw-headers-table tr:hover {
     background-color: #383850;
 }
+
+/* NEW: กำหนดความกว้างของคอลัมน์ */
+.raw-headers-table td:first-child {
+    width: 30%; /* Header Name */
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    color: var(--text-light);
+}
+
+/* NEW: Style for the header value span (used with raw-display-value in script.js) */
+.raw-display-value {
+    /* อนุญาตให้มีบรรทัดใหม่ (จาก \n ที่เราใส่ใน script.js) */
+    white-space: pre-wrap; 
+    
+    /* บังคับให้คำที่ยาวเกินหักลงบรรทัดใหม่ (สำคัญสำหรับ CSP หรือคุกกี้ที่ยาวมาก) */
+    word-break: break-word; 
+    
+    /* กำหนด display: block; เพื่อให้ white-space: pre-wrap; ทำงานอย่างถูกต้อง */
+    display: block; 
+    
+    /* สไตล์ของค่า Header */
+    font-family: 'Consolas', monospace;
+    font-size: 0.9em;
+    color: #ffd700; /* Gold-like color */
+    background-color: #151525;
+    padding: 5px;
+    border-radius: 3px;
+    margin: -3px; /* ปรับเพื่อไม่ให้เกิด padding เกินใน cell */
+}
+
 
 /* ------------------ NEW: Suggest Fix Button & Modal Styles (Dark Theme) ------------------ */
 
